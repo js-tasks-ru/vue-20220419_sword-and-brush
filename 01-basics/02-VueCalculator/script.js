@@ -1,5 +1,12 @@
 import { createApp, defineComponent } from './vendor/vue.esm-browser.js';
 
+const operators = {
+  sum: (initialValue, secondValue) => initialValue + secondValue,
+  subtract: (initialValue, secondValue) => initialValue - secondValue,
+  multiply: (initialValue, secondValue) => initialValue * secondValue,
+  divide: (initialValue, secondValue) => initialValue / secondValue,
+};
+
 // Создайте Vue приложение
 const App = defineComponent({
   name: 'app',
@@ -12,16 +19,9 @@ const App = defineComponent({
     };
   },
 
-  operators: {
-    sum: (initialValue, secondValue) => initialValue + secondValue,
-    subtract: (initialValue, secondValue) => initialValue - secondValue,
-    multiply: (initialValue, secondValue) => initialValue * secondValue,
-    divide: (initialValue, secondValue) => initialValue / secondValue,
-  },
-
   computed: {
     calculationResult() {
-      return this.$options.operators[this.typeOfCalculation](this.firstOperand, this.secondOperand);
+      return operators[this.typeOfCalculation](this.firstOperand, this.secondOperand);
     },
   },
 });
