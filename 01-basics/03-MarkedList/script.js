@@ -36,20 +36,16 @@ const App = defineComponent({
   data() {
     return {
       searchValue: '',
-      restructuredEmails: [],
     };
   },
 
-  watch: {
-    searchValue: {
-      handler() {
-        this.restructuredEmails = emails.map((currentEmail) => {
-          return this.searchValue && currentEmail.includes(this.searchValue)
-            ? { email: currentEmail, selected: true }
-            : { email: currentEmail, selected: false };
-        });
-      },
-      immediate: true,
+  computed: {
+    restructuredEmails() {
+      return emails.map((currentEmail) => {
+        return this.searchValue && currentEmail.includes(this.searchValue)
+          ? { email: currentEmail, selected: true }
+          : { email: currentEmail, selected: false };
+      });
     },
   },
 });
