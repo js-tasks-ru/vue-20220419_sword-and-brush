@@ -18,7 +18,7 @@
         :class="hasAnIcon && 'dropdown__item_icon'"
         role="option"
         type="button"
-        @click="selectAnItem"
+        @click="selectAnItem(option)"
       >
         <ui-icon v-if="option.icon" :icon="option.icon" class="dropdown__icon" />
         {{ option.text }}
@@ -69,8 +69,8 @@ export default {
   },
 
   methods: {
-    selectAnItem() {
-      this.$emit('update:modelValue', this.option.value);
+    selectAnItem(option) {
+      this.$emit('update:modelValue', option.value);
       this.menuIsOpen = !this.menuIsOpen;
     },
   },
