@@ -35,7 +35,7 @@ export default {
 
   methods: {
     sendRemovalRequest() {
-      this.$emit('remove', this.toast.message);
+      this.$emit('remove', this.toast);
     },
   },
 };

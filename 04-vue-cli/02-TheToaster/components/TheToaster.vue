@@ -37,7 +37,7 @@ export default {
       setTimeout(() => this.toastsList.shift(), time);
     },
     removeToast($event) {
-      const toastPosition = this.toastsList.findIndex((item) => $event === item.message);
+      const toastPosition = this.toastsList.indexOf((item) => $event === item);
       this.toastsList.splice(toastPosition, 1);
     },
   },
