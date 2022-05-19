@@ -1,9 +1,9 @@
 <template>
-  <div class="dropdown" :class="menuIsOpen && 'dropdown_opened'">
+  <div class="dropdown" :class="{ dropdown_opened: menuIsOpen }">
     <button
       type="button"
       class="dropdown__toggle"
-      :class="hasAnIcon && 'dropdown__toggle_icon'"
+      :class="{ dropdown__toggle_icon: hasAnIcon }"
       @click="menuIsOpen = !menuIsOpen"
     >
       <ui-icon v-if="selectedOption.selectedIcon" :icon="selectedOption.selectedIcon" class="dropdown__icon" />
@@ -12,10 +12,10 @@
 
     <div v-show="menuIsOpen" class="dropdown__menu" role="listbox">
       <button
-        v-for="(option, index) in options"
-        :key="option.value + index"
+        v-for="option in options"
+        :key="option.value"
         class="dropdown__item"
-        :class="hasAnIcon && 'dropdown__item_icon'"
+        :class="{ dropdown__item_icon: hasAnIcon }"
         role="option"
         type="button"
         @click="selectAnItem(option)"
