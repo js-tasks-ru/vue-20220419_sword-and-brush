@@ -5,7 +5,6 @@ export default defineComponent({
   name: 'MeetupAgendaItem',
 
   itemIcons: agendaItemIcons,
-  defaultTitles: agendaItemDefaultTitles,
 
   props: {
     agendaItem: {
@@ -16,7 +15,7 @@ export default defineComponent({
 
   computed: {
     agendaItemTitle() {
-      return this.agendaItem.title || this.$options.defaultTitles[this.agendaItem.type];
+      return this.agendaItem.title || agendaItemDefaultTitles[this.agendaItem.type];
     },
   },
 
