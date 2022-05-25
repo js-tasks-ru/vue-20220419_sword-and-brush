@@ -46,12 +46,18 @@ describe('vue-router/ScrollBehavior', () => {
     it('При переходе между маршрутами c истинными meta свойствами saveScrollPosition у обоих маршрутов положение на странице не должно изменяться', async () => {
       const to = createRouteMock({ meta: { saveScrollPosition: true } });
       const from = createRouteMock({ meta: { saveScrollPosition: true } });
-      expect(scrollBehavior(to, from)).toBe(false);
+      expect(scrollBehavior(to, from) || {}).toEqual({});
     });
 
-    it('При переходе между маршрутами c истинным meta свойством saveScrollPosition только у одного маршрута положение на странице должно оставаться поведение по умолчанию', async () => {
+    it('При переходе между маршрутами c истинным meta свойством saveScrollPosition только у to маршрута положение на странице должно оставаться поведение по умолчанию', async () => {
       const to = createRouteMock({ meta: { saveScrollPosition: true } });
       const from = createRouteMock();
+      expect(scrollBehavior(to, from)).toMatchObject({ left: 0, top: 0 });
+    });
+
+    it('При переходе между маршрутами c истинным meta свойством saveScrollPosition только у from маршрута положение на странице должно оставаться поведение по умолчанию', async () => {
+      const to = createRouteMock();
+      const from = createRouteMock({ meta: { saveScrollPosition: true } });
       expect(scrollBehavior(to, from)).toMatchObject({ left: 0, top: 0 });
     });
   });
