@@ -1,7 +1,7 @@
 <template>
   <div class="toasts">
     <toasts-list v-slot="{ toast }" :toasts-list="toastsList">
-      <ui-toast :toast="toast" :has-closing-icon="true" @remove="removeToast" />
+      <ui-toast :toast="toast" :has-closing-icon="true" @remove="removeToast(toast)" />
     </toasts-list>
   </div>
 </template>
