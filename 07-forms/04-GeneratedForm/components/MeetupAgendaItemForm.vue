@@ -1,36 +1,46 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="$emit('remove')">
       <ui-icon icon="trash" />
     </button>
 
     <ui-form-group>
-      <ui-dropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <ui-dropdown v-model="localAgendaItem.type" title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
     </ui-form-group>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <ui-form-group label="Начало">
-          <ui-input type="time" placeholder="00:00" name="startsAt" />
+          <ui-input v-model="customModel" type="time" placeholder="00:00" name="startsAt" />
         </ui-form-group>
       </div>
       <div class="agenda-item-form__col">
         <ui-form-group label="Окончание">
-          <ui-input type="time" placeholder="00:00" name="endsAt" />
+          <ui-input v-model="localAgendaItem.endsAt" type="time" placeholder="00:00" name="endsAt" />
         </ui-form-group>
       </div>
     </div>
 
-    <ui-form-group label="Заголовок">
-      <ui-input name="title" />
-    </ui-form-group>
-    <ui-form-group label="Описание">
-      <ui-input multiline name="description" />
+    <ui-form-group
+      v-for="(item, index) in $options.agendaItemFormSchemas[localAgendaItem.type]"
+      :key="index"
+      :label="item.label"
+    >
+      <component
+        :is="item.component === 'ui-dropdown' ? 'UiDropdown' : 'UiInput'"
+        v-model="localAgendaItem[item.props.name]"
+        v-bind="item.props"
+      />
     </ui-form-group>
   </fieldset>
 </template>
 
 <script>
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
+
 import UiIcon from './UiIcon';
 import UiFormGroup from './UiFormGroup';
 import UiInput from './UiInput';
@@ -163,6 +173,45 @@ export default {
     agendaItem: {
       type: Object,
       required: true,
+    },
+  },
+
+  emits: ['update:agendaItem', 'remove'],
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+  computed: {
+    displayForType() {
+      return {
+        talk: this.localAgendaItem.type === 'talk',
+        other: this.localAgendaItem.type === 'other',
+      };
+    },
+    customModel: {
+      get() {
+        return this.localAgendaItem.startsAt;
+      },
+      set(value) {
+        const oldStartsAt = dayjs(this.localAgendaItem.startsAt, 'HH:mm').valueOf();
+        const oldEndsAtt = dayjs(this.localAgendaItem.endsAt, 'HH:mm').valueOf();
+        const newStartValue = dayjs(value, 'HH:mm').valueOf();
+        const newEndsAtt = oldEndsAtt + (newStartValue - oldStartsAt);
+
+        this.localAgendaItem.startsAt = value;
+        this.localAgendaItem.endsAt = dayjs(newEndsAtt).format('HH:mm');
+      },
+    },
+  },
+
+  watch: {
+    localAgendaItem: {
+      handler() {
+        this.$emit('update:agendaItem', { ...this.localAgendaItem });
+      },
+      deep: true,
     },
   },
 };
