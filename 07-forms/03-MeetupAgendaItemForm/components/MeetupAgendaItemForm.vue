@@ -1,37 +1,52 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="$emit('remove')">
       <ui-icon icon="trash" />
     </button>
 
     <ui-form-group>
-      <ui-dropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <ui-dropdown v-model="localAgendaItem.type" title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
     </ui-form-group>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <ui-form-group label="Начало">
-          <ui-input type="time" placeholder="00:00" name="startsAt" />
+          <ui-input v-model="customModel" type="time" placeholder="00:00" name="startsAt" />
         </ui-form-group>
       </div>
       <div class="agenda-item-form__col">
         <ui-form-group label="Окончание">
-          <ui-input type="time" placeholder="00:00" name="endsAt" />
+          <ui-input v-model="localAgendaItem.endsAt" type="time" placeholder="00:00" name="endsAt" />
         </ui-form-group>
       </div>
     </div>
 
-    <ui-form-group label="Тема">
-      <ui-input name="title" />
+    <ui-form-group
+      v-if="displayForType.talk || displayForType.other"
+      :label="localAgendaItem.type === 'talk' ? 'Тема' : 'Заголовок'"
+    >
+      <ui-input v-model="localAgendaItem.title" name="title" />
     </ui-form-group>
-    <ui-form-group label="Докладчик">
-      <ui-input name="speaker" />
+
+    <ui-form-group v-if="localAgendaItem.type === 'talk'" label="Докладчик">
+      <ui-input v-model="localAgendaItem.speaker" name="speaker" />
     </ui-form-group>
-    <ui-form-group label="Описание">
-      <ui-input multiline name="description" />
+
+    <ui-form-group v-if="displayForType.talk || displayForType.other" label="Описание">
+      <ui-input v-model="localAgendaItem.description" multiline name="description" />
     </ui-form-group>
-    <ui-form-group label="Язык">
-      <ui-dropdown title="Язык" :options="$options.talkLanguageOptions" name="language" />
+
+    <ui-form-group v-if="displayForType.talk" label="Язык">
+      <ui-dropdown
+        v-model="localAgendaItem.language"
+        title="Язык"
+        :options="$options.talkLanguageOptions"
+        name="language"
+      />
+    </ui-form-group>
+
+    <ui-form-group v-if="!(displayForType.talk || displayForType.other)" label="Нестандартный текст (необязательно)">
+      <ui-input v-model="localAgendaItem.title" name="title" />
     </ui-form-group>
   </fieldset>
 </template>
@@ -88,6 +103,55 @@ export default {
     agendaItem: {
       type: Object,
       required: true,
+    },
+  },
+
+  emits: ['update:agendaItem', 'remove'],
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+  computed: {
+    displayForType() {
+      return {
+        talk: this.localAgendaItem.type === 'talk',
+        other: this.localAgendaItem.type === 'other',
+      };
+    },
+    customModel: {
+      get() {
+        return this.localAgendaItem.startsAt;
+      },
+      set(value) {
+        let oldStartAtMinutes = this.localAgendaItem.startsAt.split(':').reduce((acc, value) => +acc * 60 + +value);
+        let newStartAtMinutes = value.split(':').reduce((acc, value) => +acc * 60 + +value);
+        let oldEndsMinutes = this.localAgendaItem.endsAt.split(':').reduce((acc, value) => +acc * 60 + +value);
+        let newEndsAtMinutes = (oldEndsMinutes + (newStartAtMinutes - oldStartAtMinutes) + 24 * 60) % (24 * 60);
+
+        let hours = (newEndsAtMinutes / 60).toFixed(0);
+        let minutes = newEndsAtMinutes % 60;
+
+        if (hours < 10) {
+          hours = '0' + hours;
+        }
+        if (minutes < 10) {
+          minutes = '0' + minutes;
+        }
+
+        this.localAgendaItem.startsAt = value;
+        this.localAgendaItem.endsAt = `${hours}:${minutes}`;
+      },
+    },
+  },
+
+  watch: {
+    localAgendaItem: {
+      handler() {
+        this.$emit('update:agendaItem', { ...this.localAgendaItem });
+      },
+      deep: true,
     },
   },
 };
