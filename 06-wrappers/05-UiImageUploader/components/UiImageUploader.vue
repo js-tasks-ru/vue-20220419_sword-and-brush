@@ -1,8 +1,20 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label
+      class="image-uploader__preview"
+      :class="{ 'image-uploader__preview-loading': status === 'uploading' }"
+      :style="`--bg-url: url('${image}') `"
+    >
+      <span class="image-uploader__text">{{ imageText }}</span>
+      <input
+        ref="input"
+        v-bind="$attrs"
+        type="file"
+        accept="image/*"
+        class="image-uploader__input"
+        @click="startModify($event)"
+        @change="changeImage"
+      />
     </label>
   </div>
 </template>
@@ -10,6 +22,77 @@
 <script>
 export default {
   name: 'UiImageUploader',
+
+  inheritAttrs: false,
+
+  props: {
+    preview: String,
+    uploader: Function,
+  },
+
+  emits: ['select', 'upload', 'error', 'remove'],
+
+  data() {
+    return {
+      status: this.preview ? 'hasAnImage' : 'empty',
+      image: this.preview,
+    };
+  },
+
+  computed: {
+    imageText() {
+      if (this.status === 'hasAnImage') {
+        return 'Удалить изображение';
+      } else if (this.status === 'empty') {
+        return 'Загрузить изображение';
+      } else {
+        return 'Загрузка...';
+      }
+    },
+  },
+
+  methods: {
+    async changeImage() {
+      const newImage = this.$refs.input.files[0];
+
+      this.$emit('select', newImage);
+
+      if (this.uploader) {
+        this.status = 'uploading';
+        try {
+          this.$emit('upload', await this.uploader(newImage));
+          this.status = 'hasAnImage';
+        } catch (e) {
+          this.$emit('error', e);
+          this.$refs.input.value = '';
+
+          if (!this.preview) {
+            this.status = 'empty';
+          }
+        }
+      } else {
+        this.status = 'uploading';
+        if (newImage) {
+          this.image = URL.createObjectURL(newImage);
+          this.status = 'hasAnImage';
+        }
+      }
+    },
+    startModify($event) {
+      if (this.status === 'uploading') {
+        $event.preventDefault();
+        return;
+      }
+      if (this.image) {
+        $event.preventDefault();
+        this.$refs.input.value = '';
+        this.image = '';
+        this.status = 'empty';
+
+        this.$emit('remove');
+      }
+    },
+  },
 };
 </script>
 
