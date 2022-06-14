@@ -1,6 +1,6 @@
 <template>
-  <div class="input-group" :class="iconClasses">
-    <div v-if="$slots['left-icon']" class="input-group__icon">
+  <div class="input-group" :class="iconClasses()">
+    <div v-if="!!$slots['left-icon']" class="input-group__icon">
       <slot name="left-icon" />
     </div>
 
@@ -14,7 +14,7 @@
       @[eventType]="sendEnteredValue"
     />
 
-    <div v-if="$slots['right-icon']" class="input-group__icon">
+    <div v-if="!!$slots['right-icon']" class="input-group__icon">
       <slot name="right-icon" />
     </div>
   </div>
@@ -47,6 +47,12 @@ export default {
         'form-control_sm': this.small,
       };
     },
+    eventType() {
+      return this.modelModifiers.lazy ? 'change' : 'input';
+    },
+  },
+
+  methods: {
     iconClasses() {
       return {
         'input-group_icon': !!this.$slots,
@@ -54,12 +60,6 @@ export default {
         'input-group_icon-right': !!this.$slots['right-icon'],
       };
     },
-    eventType() {
-      return this.modelModifiers.lazy ? 'change' : 'input';
-    },
-  },
-
-  methods: {
     focus() {
       this.$refs.input.focus();
     },
