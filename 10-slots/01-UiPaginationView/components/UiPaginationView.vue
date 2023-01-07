@@ -1,6 +1,6 @@
 <template>
   <div class="pagination-container">
-    <!-- Контент страницы -->
+    <slot v-for="meetup in meetups" :item="meetup" />
   </div>
 </template>
 
@@ -22,6 +22,14 @@ export default {
     items: {
       type: Array,
       required: true,
+    },
+  },
+
+  computed: {
+    meetups() {
+      const lastElementPosition = this.page * this.perPage;
+
+      return this.items.slice(lastElementPosition - this.perPage, lastElementPosition);
     },
   },
 };
