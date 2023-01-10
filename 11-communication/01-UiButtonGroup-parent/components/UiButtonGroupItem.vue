@@ -1,5 +1,13 @@
 <template>
-  <button class="button-group__button button-group__button_active" type="button" aria-selected="false">Button</button>
+  <button
+    class="button-group__button"
+    :class="{ 'button-group__button_active': target }"
+    type="button"
+    aria-selected="false"
+    @click="$parent.$emit('update:modelValue', value)"
+  >
+    <slot />
+  </button>
 </template>
 
 <script>
@@ -10,6 +18,21 @@ export default {
     value: {
       required: true,
     },
+  },
+
+  computed: {
+    target() {
+      return this.$parent.$props.modelValue === this.value;
+    },
+  },
+
+  mounted() {
+    if (this.$parent.name !== 'UiButtonGroup') {
+      console.warn(
+        'Неверное местоположение компонента UiButtonGroupItem. ' +
+          'Компонент UiButtonGroupItem может быть использован только в качестве содержимого компонента UiButtonGroup',
+      );
+    }
   },
 };
 </script>
