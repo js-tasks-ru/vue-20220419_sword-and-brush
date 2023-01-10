@@ -25,26 +25,20 @@ export default {
   watch: {
     promise: {
       handler() {
-        this.fetchMeetup();
+        this.status = 'pending';
+        this.payload = {};
+
+        this.promise
+          .then((data) => {
+            this.status = 'fulfilled';
+            this.payload = data;
+          })
+          .catch((error) => {
+            this.status = 'error';
+            this.payload = error;
+          });
       },
       immediate: true,
-    },
-  },
-
-  methods: {
-    fetchMeetup() {
-      this.status = 'pending';
-      this.payload = {};
-
-      this.promise
-        .then((data) => {
-          this.status = 'fulfilled';
-          this.payload = data;
-        })
-        .catch((error) => {
-          this.status = 'error';
-          this.payload = error;
-        });
     },
   },
 };
