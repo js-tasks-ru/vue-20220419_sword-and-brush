@@ -1,12 +1,12 @@
 <template>
   <button
     class="button-group__button"
-    :class="{ 'button-group__button_active': target }"
+    :class="{ 'button-group__button_active': isActive }"
     type="button"
     aria-selected="false"
-    @click="$parent.$emit('update:modelValue', value)"
+    @click="emitButtonValue"
   >
-    <slot />
+    <slot>Button</slot>
   </button>
 </template>
 
@@ -21,18 +21,25 @@ export default {
   },
 
   computed: {
-    target() {
+    isActive() {
       return this.$parent.$props.modelValue === this.value;
     },
   },
 
   mounted() {
-    if (this.$parent.name !== 'UiButtonGroup') {
+    if (this.$parent.$options.name !== 'UiButtonGroup') {
+      // eslint-disable-next-line no-console
       console.warn(
         'Неверное местоположение компонента UiButtonGroupItem. ' +
           'Компонент UiButtonGroupItem может быть использован только в качестве содержимого компонента UiButtonGroup',
       );
     }
+  },
+
+  methods: {
+    emitButtonValue() {
+      this.$parent.emitButtonValue(this.value);
+    },
   },
 };
 </script>
