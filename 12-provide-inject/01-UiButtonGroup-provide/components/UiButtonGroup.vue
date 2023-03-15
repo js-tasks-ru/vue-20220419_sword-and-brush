@@ -25,8 +25,6 @@ export default {
 
   emits: ['update:modelValue'],
 
-  expose: ['modelValue', 'emitButtonValue'],
-
   methods: {
     emitButtonValue(value) {
       this.$emit('update:modelValue', value);

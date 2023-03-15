@@ -14,14 +14,7 @@
 export default {
   name: 'UiButtonGroupItem',
 
-  inject: {
-    reactModelValue: {
-      from: 'reactModelValue',
-    },
-    emitButtonValue: {
-      from: 'emitButtonValue',
-    },
-  },
+  inject: ['reactModelValue', 'emitButtonValue'],
 
   props: {
     value: {
