@@ -10,8 +10,10 @@ export function useProgress() {
 }
 
 export function createProgress({ container, router } = {}) {
-  container = container || document.createElement('div');
-  document.body.appendChild(container);
+  if (!container) {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  }
 
   const progressBarInstance = createApp(TheTopProgressBar).mount(container);
 
