@@ -10,5 +10,44 @@ export function useProgress() {
 }
 
 export function createProgress({ container, router } = {}) {
-  // Решение
+  if (!container) {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  }
+
+  const progressBarInstance = createApp(TheTopProgressBar).mount(container);
+
+  if (router) {
+    router.beforeEach(() => {
+      progressBarInstance.start();
+      return true;
+    });
+
+    router.afterEach(() => {
+      progressBarInstance.finish();
+    });
+
+    router.onError((err) => {
+      progressBarInstance.fail();
+      throw err;
+    });
+  }
+
+  const progressBar = {
+    start(loader) {
+      progressBarInstance.start(loader);
+    },
+    finish(loader) {
+      progressBarInstance.finish(loader);
+    },
+    fail() {
+      progressBarInstance.fail();
+    },
+
+    install(container) {
+      container.provide(PROGRESS_KEY, progressBar);
+    },
+  };
+
+  return progressBar;
 }

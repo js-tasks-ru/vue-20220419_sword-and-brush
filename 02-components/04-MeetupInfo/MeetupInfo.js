@@ -1,6 +1,6 @@
 import { defineComponent } from './vendor/vue.esm-browser.js';
-import dayjs from 'dayjs';
-import ru from 'dayjs/locale/ru';
+// import dayjs from 'dayjs';
+// import ru from 'dayjs/locale/ru';
 
 export default defineComponent({
   name: 'MeetupInfo',
@@ -20,7 +20,7 @@ export default defineComponent({
     },
   },
 
-  /*computed: {
+  computed: {
     formatAsLocalDate() {
       return new Date(this.date).toLocaleString(navigator.language, {
         year: 'numeric',
@@ -31,16 +31,16 @@ export default defineComponent({
     formatAsIsoDate() {
       return new Date(this.date).toISOString().split('T')[0];
     },
-  },*/
+  },
 
-  computed: {
+  /*  computed: {
     formatAsLocalDate() {
       return dayjs(this.date).locale('ru').format('DD MMMM YYYY [г.]');
     },
     formatAsIsoDate() {
       return dayjs(this.date).format('YYYY-MM-DD');
     },
-  },
+  },*/
 
   template: `
     <ul class="meetup-info">
